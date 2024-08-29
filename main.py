@@ -68,25 +68,26 @@ def create_chatroom(chatroom:Chatroom):
     table = connection.table('chatroom')
     chatroom_id = chatroom.room_name
     table.put(chatroom_id, {'info:room_name': chatroom.room_name})
-    return{'chatroom_id':chatroom_id, 'room_name':chatroom.romm_name}
+    return{'chatroom_id':chatroom_id, 'room_name':chatroom.room_name}
 
 @app.post('/chat')
 def create_chat(chat: Chat):
     table = connection.table('chat')
     timestamp = datetime.now().timestamp()
-    MAX_TIMESTAMP = 2**63 - 1
+    MAX_TIMESTAMP = 2**31 - 1
+    reverse_ts = MAX_TIMESTAMP - timestamp
+    chat_id = f'{chat.room_id}_{reverse_ts}'
 
-    chat_id = f'{chat.room_id}_{int(MAX_TIMESTAMP-timestamp)}'
     table.put(chat_id,{
         'info:user_id' : chat.user_id,
         'info:room_id' : chat.room_id,
-        'info:message' : chat.message,
+        'info:message' : chat.message
     })
 
     return {
         'chat_id' : chat_id,
         'user_id' : chat.user_id,
-        'room_id' : chat.roomm_id,
+        'room_id' : chat.room_id,
         'message' : chat.message
 
     }
@@ -95,7 +96,7 @@ def create_chat(chat: Chat):
 def get_chatroom(room_id: str):
     table = connection.table('chat')
 
-    rows = table.scan(filter=f"SingleColumnValueFilter('info', 'roo_id', =, '{room_id}')")
+    rows = table.scan(filter=f"SingleColumnValueFilter('info', 'room_id', =, 'binary:{room_id}')")
 
     chats = []
 
