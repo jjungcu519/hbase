@@ -3,7 +3,7 @@ import happybase
 from pydantic import BaseModel
 from datetime import datetime
 
-app = FastAPI() #fastapi = 작은 django~
+app = FastAPI() 
 
 connection = happybase.Connection('localhost')
 connection.open()
@@ -21,9 +21,9 @@ class Chat(BaseModel):
     message: str
 
 
-# @app.get("/")   # => urls.py
-# def read_root():    # => views.py
-#     return {"Hello": "World"}   # => context return이 한 과정에~
+# @app.get("/")
+# def read_root():
+#     return {"Hello": "World"}
 
 # @app.get('/index')
 # def index():
